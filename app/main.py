@@ -1,5 +1,3 @@
-from typing import Union
-from app.db import get_db
 from app.router import user,media
 from fastapi import FastAPI
 
