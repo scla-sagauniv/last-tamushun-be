@@ -2,22 +2,22 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-
-@router.get("/tasks")
-async def list_tasks():
+# media一覧取得
+@router.get("/media")
+async def list_media():
     pass
 
-
-@router.post("/tasks")
-async def create_task():
+# create
+@router.post("/media")
+async def create_media():
     pass
 
-
-@router.put("/tasks/{task_id}")
-async def update_task():
+# update
+@router.patch("/media/{media_id}")
+async def update_media():
     pass
 
-
-@router.delete("/tasks/{task_id}")
-async def delete_task():
+# delete
+@router.delete("/media/{media_id}")
+async def delete_media():
     pass
