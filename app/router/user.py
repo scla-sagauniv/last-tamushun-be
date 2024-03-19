@@ -1,6 +1,20 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.models.user import User as DBUser
+from app.schema.user import UserCreate, UserResponse
 
 router = APIRouter()
+
+# userをポストするだけのサンプル
+@router.post("/user/", response_model=UserResponse)
+async def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = DBUser(**user.dict())
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
 # ユーザー新規登録
 @router.post("/signup")
