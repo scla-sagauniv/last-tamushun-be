@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, FastAPI
 from sqlalchemy.orm import Session
 
 from app.db import get_db
+from app.router.media import get_user_id
 from app.models.user import User as DBUser
-from app.schema.user import UserCreate, UserResponse,UserLogin
+from app.schema.user import UserCreate, UserResponse, UserLogin, UserUpdate, UserToken, UserResponse
 import jwt
 
 router = APIRouter()
@@ -56,11 +57,36 @@ async def Login(user: UserLogin, db: Session = Depends(get_db)):
          raise HTTPException(status_code=401, detail="Incorrect email or password")
 
 # ユーザー情報取得
-@router.get("/user/{userid}")
-async def userinfo():
-    pass
+@router.get("/user", response_model=UserResponse)
+async def userinfo(
+    user_id: str = Depends(get_user_id), 
+    db: Session = Depends(get_db)
+):
+    user_info = db.query(DBUser).filter(DBUser.id == user_id).first()
 
+    return user_info
+
+    
 # ユーザー情報アップデート
-@router.patch("/user/{userid}")
-async def update_user():
-    pass
+@router.patch("/user", response_model=UserResponse)
+async def update_user(
+    updated_user: UserUpdate,
+    user_id: str = Depends(get_user_id),
+    db: Session = Depends(get_db)
+):
+    db_user = db.query(DBUser).filter(DBUser.id == user_id).first()
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if db_user.id != user_id:
+        raise HTTPException(status_code=403, detail="User is not authorized to update this information")
+
+    if updated_user.name:
+        db_user.name = updated_user.name
+    if updated_user.email:
+        db_user.email = updated_user.email
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
+
