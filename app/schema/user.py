@@ -14,7 +14,6 @@ class UserLogin(BaseModel):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
-    hashed_password: Optional[str] = None
 
 class UserToken(BaseModel):
     token: str
