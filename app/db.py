@@ -1,8 +1,17 @@
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import create_engine
+import os
+from dotenv import load_dotenv
 
-DB_URL = "mysql+pymysql://tester:password@brachio_db:3306/test?charset=utf8"
+load_dotenv()
 
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
+
+DB_URL = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8"
 engine = create_engine(DB_URL, echo=True)
 session = sessionmaker(engine)
 

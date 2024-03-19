@@ -6,3 +6,4 @@ sqlalchemy
 PyMySQL
 pydantic[email]
 cryptography
+python-dotenv
