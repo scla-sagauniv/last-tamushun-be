@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
+import jwt
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -7,11 +8,24 @@ from app.models.media import Media as DBMedia
 router = APIRouter()
 
 # jwt検証用
-async def get_user_id(authorization: str = Header()):
-    # ヘッダーからトークンを取得
-    # token = 
-    # トークンをデコードしてuseridをreturn
-    pass 
+async def get_user_id(authorization: str = Header(...)):
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise credentials_exception
+        payload = jwt.decode(token, options={"verify_signature": False})
+        user_id = payload.get("user_id")
+        if user_id is None:
+            raise credentials_exception
+        return user_id
+    except (ValueError):
+        raise credentials_exception
+    
 
 # media一覧取得
 @router.get("/media")
@@ -20,7 +34,7 @@ async def list_media(
     db: Session = Depends(get_db)
 ):
     media_list = db.query(DBMedia).filter(DBMedia.user_id == user_id).all()
-    return media_list
+    return {"media": media_list}
 
 # create
 @router.post("/media")
