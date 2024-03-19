@@ -8,4 +8,4 @@ app.include_router(media.router)
 
 @app.get("/test")
 async def test():
-    return {"message":"hello"}
+    return {"message": "hello"}
