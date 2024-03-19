@@ -31,4 +31,4 @@ jobs:
           context: .
           push: true
           tags: |
-            975050196014.dkr.ecr.ap-southeast-2.amazonaws.com/last-tamushun-be:${{ github.sha }}
+            975050196014.dkr.ecr.ap-southeast-2.amazonaws.com/last-tamushun-be:latest
