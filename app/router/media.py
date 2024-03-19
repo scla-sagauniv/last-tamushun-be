@@ -34,7 +34,7 @@ async def list_media(
     db: Session = Depends(get_db)
 ):
     media_list = db.query(DBMedia).filter(DBMedia.user_id == user_id).all()
-    return {"media": media_list}
+    return {"medium": media_list}
 
 # create
 @router.post("/media")
