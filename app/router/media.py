@@ -30,15 +30,29 @@ async def get_user_id(authorization: str = Header(...)):
 # media一覧取得
 @router.get("/media", response_model=MediaList)
 async def list_media(
-    user_id: str = Depends(get_user_id),
+    user_id: int = Depends(get_user_id),
     db: Session = Depends(get_db)
 ):
     media_list = db.query(DBMedia).filter(DBMedia.user_id == user_id).all()
-    return media_list
+
+    media_response_list = []
+    for media in media_list:
+        media_response = MediaResponse(
+            id=media.id,
+            user_id=media.user_id,
+            image_url=media.image_url,
+            movie_url=media.movie_url,
+            lat=media.lat,
+            lon=media.lon,
+            created_at=media.created_at,
+            updated_at=media.updated_at
+        )
+        media_response_list.append(media_response)
+    return MediaList(medium=media_response_list)
 
 # create
-@router.post("/media", response_model=MediaResponse)
-async def create_media(media: MediaCreate, user_id: str = Depends(get_user_id), db: Session = Depends(get_db)):
+@router.post("/media",response_model=MediaResponse)
+async def create_media(media: MediaCreate, user_id: int = Depends(get_user_id), db: Session = Depends(get_db)):
     if media is None:
         raise HTTPException(status_code=400, detail="Bad Request")
     
@@ -49,14 +63,23 @@ async def create_media(media: MediaCreate, user_id: str = Depends(get_user_id), 
     db.add(db_media)
     db.commit()
     db.refresh(db_media)
-    return db_media
+    return MediaResponse(
+        id=db_media.id,
+        user_id=db_media.user_id,
+        image_url=db_media.image_url,
+        movie_url=db_media.movie_url,
+        lat=db_media.lat,
+        lon=db_media.lon,
+        created_at=db_media.created_at,
+        updated_at=db_media.updated_at
+    )
 
 # update
 @router.patch("/media/{media_id}", response_model=MediaResponse)
 async def update_media(
     media_id: int,
     updated_media: MediaUpdate,
-    user_id: str = Depends(get_user_id),
+    user_id: int = Depends(get_user_id),
     db: Session = Depends(get_db)
 ):
     db_media = db.query(DBMedia).filter(DBMedia.id == media_id).first()
@@ -75,11 +98,20 @@ async def update_media(
         db_media.lon = updated_media.lon 
     db.commit()
     db.refresh(db_media)
-    return db_media
+    return MediaResponse(
+        id=db_media.id,
+        user_id=db_media.user_id,
+        image_url=db_media.image_url,
+        movie_url=db_media.movie_url,
+        lat=db_media.lat,
+        lon=db_media.lon,
+        created_at=db_media.created_at,
+        updated_at=db_media.updated_at
+    )
 
 # delete
 @router.delete("/media/{media_id}")
-async def delete_media(media_id: int, user_id: str = Depends(get_user_id), db: Session = Depends(get_db)):
+async def delete_media(media_id: int, user_id: int = Depends(get_user_id), db: Session = Depends(get_db)):
     db_media = db.query(DBMedia).filter(DBMedia.id == media_id).first()
     if db_media is None:
         raise HTTPException(status_code=404, detail="Media not found")

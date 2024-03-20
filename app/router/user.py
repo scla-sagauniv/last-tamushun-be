@@ -59,7 +59,7 @@ async def Login(user: UserLogin, db: Session = Depends(get_db)):
 # ユーザー情報取得
 @router.get("/user", response_model=UserResponse)
 async def userinfo(
-    user_id: str = Depends(get_user_id), 
+    user_id: int = Depends(get_user_id), 
     db: Session = Depends(get_db)
 ):
     user_info = db.query(DBUser).filter(DBUser.id == user_id).first()
@@ -71,7 +71,7 @@ async def userinfo(
 @router.patch("/user", response_model=UserResponse)
 async def update_user(
     updated_user: UserUpdate,
-    user_id: str = Depends(get_user_id),
+    user_id: int = Depends(get_user_id),
     db: Session = Depends(get_db)
 ):
     db_user = db.query(DBUser).filter(DBUser.id == user_id).first()
