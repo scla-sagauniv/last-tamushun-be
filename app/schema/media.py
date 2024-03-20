@@ -5,24 +5,24 @@ from pydantic import BaseModel
 class MediaCreate(BaseModel):
     image_url: Optional[str] = None
     movie_url: Optional[str] = None
-    lat: Optional[str] = None
-    lon: Optional[str] = None
+    lat: Optional[int] = None
+    lon: Optional[int] = None
 
 class MediaUpdate(BaseModel):
     image_url: Optional[str] = None
     movie_url: Optional[str] = None
-    lat: Optional[str] = None
-    lon: Optional[str] = None
+    lat: Optional[int] = None
+    lon: Optional[int] = None
 
 class MediaResponse(BaseModel):
     id: int
-    userid: Optional[int] = None
+    user_id: Optional[int] = None
     image_url: Optional[str] = None
     movie_url: Optional[str] = None
-    lat: Optional[str] = None
-    lon: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
+    lat: Optional[int] = None
+    lon: Optional[int] = None
+    created_at: datetime = None
+    updated_at: datetime = None
 
 class MediaList(BaseModel):
     medium: List[MediaResponse]
