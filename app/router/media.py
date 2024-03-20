@@ -3,7 +3,7 @@ import jwt
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.schema.media import MediaCreate, MediaUpdate
+from app.schema.media import MediaCreate, MediaList, MediaResponse, MediaUpdate
 from app.models.media import Media as DBMedia
 router = APIRouter()
 
@@ -28,16 +28,16 @@ async def get_user_id(authorization: str = Header(...)):
     
 
 # media一覧取得
-@router.get("/media")
+@router.get("/media", response_model=MediaList)
 async def list_media(
     user_id: str = Depends(get_user_id),
     db: Session = Depends(get_db)
 ):
     media_list = db.query(DBMedia).filter(DBMedia.user_id == user_id).all()
-    return {"medium": media_list}
+    return media_list
 
 # create
-@router.post("/media")
+@router.post("/media", response_model=MediaResponse)
 async def create_media(media: MediaCreate, user_id: str = Depends(get_user_id), db: Session = Depends(get_db)):
     if media is None:
         raise HTTPException(status_code=400, detail="Bad Request")
@@ -52,7 +52,7 @@ async def create_media(media: MediaCreate, user_id: str = Depends(get_user_id), 
     return db_media
 
 # update
-@router.patch("/media/{media_id}")
+@router.patch("/media/{media_id}", response_model=MediaResponse)
 async def update_media(
     media_id: int,
     updated_media: MediaUpdate,

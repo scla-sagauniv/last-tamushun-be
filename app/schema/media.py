@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
 
 class MediaCreate(BaseModel):
@@ -24,5 +24,8 @@ class MediaResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+class MediaList(BaseModel):
+    medium: List[MediaResponse]
+    
     class Config:
         orm_mode = True

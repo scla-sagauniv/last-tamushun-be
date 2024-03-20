@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, FastAPI
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.router.media import get_user_id
 from app.models.user import User as DBUser
-from app.schema.user import UserCreate, UserResponse, UserLogin, UserUpdate, UserToken, UserResponse
+from app.schema.user import UserCreate, UserResponse, UserLogin, UserUpdate, UserToken
 import jwt
 
 router = APIRouter()
@@ -31,18 +31,18 @@ def create_jwt(user_id, name, email):
     return jwt_assertion
 
 # ユーザー新規登録
-@router.post("/signup")
+@router.post("/signup", response_model=UserToken)
 async def Signup(user: UserCreate, db: Session = Depends(get_db)):
     db_user = DBUser(**user.dict())
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     token = create_jwt(db_user.id, db_user.name, db_user.email)
-    return {"token": token}
+    return UserToken(token=token)
 
 
 # ユーザーログイン
-@router.post("/login")
+@router.post("/login", response_model=UserToken)
 async def Login(user: UserLogin, db: Session = Depends(get_db)):
     # 入力を受け取る
     db_user = DBUser(**user.dict())
@@ -52,7 +52,7 @@ async def Login(user: UserLogin, db: Session = Depends(get_db)):
     # あってたらtoken生成
     if db_user and user.hashed_password == db_user.hashed_password:
         token = create_jwt(db_user.id, db_user.name, db_user.email)
-        return {"token": token}
+        return UserToken(token=token)
     else:
          raise HTTPException(status_code=401, detail="Incorrect email or password")
 
